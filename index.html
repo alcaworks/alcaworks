@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Lottie ホバー再生</title>
+  <title>Lottie タップ再生対応</title>
   <style>
     html, body {
       margin: 0;
@@ -13,19 +13,18 @@
       align-items: center;
     }
 
-    /* ターゲットエリア（中央の円） */
     .trigger-zone {
       width: 200px;
       height: 200px;
       border-radius: 50%;
-      background-color: rgba(0, 0, 0, 0.05); /* 半透明の丸 */
+      background-color: rgba(0, 0, 0, 0.05);
       display: flex;
       justify-content: center;
       align-items: center;
       cursor: pointer;
+      touch-action: none; /* モバイルでの挙動制御 */
     }
 
-    /* Lottieアニメーションのサイズ調整 */
     #lottie {
       width: 150px;
       height: 150px;
@@ -46,18 +45,32 @@
       renderer: 'svg',
       loop: false,
       autoplay: false,
-      path: '4.json' // あなたのLottie JSONファイル
+      path: '4.json'
     });
 
-    // マウスが中央の円に入ったとき → 順再生
-    document.getElementById('triggerZone').addEventListener('mouseenter', () => {
-      animation.setDirection(1); // 順方向
+    const trigger = document.getElementById('triggerZone');
+
+    // PC用（マウス）
+    trigger.addEventListener('mouseenter', () => {
+      animation.setDirection(1);
       animation.play();
     });
 
-    // マウスが離れたとき → 逆再生
-    document.getElementById('triggerZone').addEventListener('mouseleave', () => {
-      animation.setDirection(-1); // 逆方向
+    trigger.addEventListener('mouseleave', () => {
+      animation.setDirection(-1);
+      animation.play();
+    });
+
+    // モバイル用（タップ）
+    trigger.addEventListener('touchstart', (e) => {
+      e.preventDefault(); // iOSの二度タップ防止など
+      animation.setDirection(1);
+      animation.play();
+    });
+
+    trigger.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      animation.setDirection(-1);
       animation.play();
     });
   </script>
