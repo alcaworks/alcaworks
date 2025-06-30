@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Lottie タップ再生対応</title>
+  <title>Lottie タッチデバイス対応</title>
   <style>
     html, body {
       margin: 0;
@@ -22,12 +22,12 @@
       justify-content: center;
       align-items: center;
       cursor: pointer;
-      touch-action: none; /* モバイルでの挙動制御 */
     }
 
     #lottie {
       width: 150px;
       height: 150px;
+      pointer-events: none; /* タッチ時の拡大鏡を防止 */
     }
   </style>
 </head>
@@ -37,7 +37,7 @@
     <div id="lottie"></div>
   </div>
 
-  <!-- Lottie ライブラリ -->
+  <!-- Lottieライブラリ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
   <script>
     const animation = lottie.loadAnimation({
@@ -49,30 +49,8 @@
     });
 
     const trigger = document.getElementById('triggerZone');
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
-    // PC用（マウス）
-    trigger.addEventListener('mouseenter', () => {
-      animation.setDirection(1);
-      animation.play();
-    });
-
-    trigger.addEventListener('mouseleave', () => {
-      animation.setDirection(-1);
-      animation.play();
-    });
-
-    // モバイル用（タップ）
-    trigger.addEventListener('touchstart', (e) => {
-      e.preventDefault(); // iOSの二度タップ防止など
-      animation.setDirection(1);
-      animation.play();
-    });
-
-    trigger.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      animation.setDirection(-1);
-      animation.play();
-    });
-  </script>
-</body>
-</html>
+    if (isTouchDevice) {
+      // タッチデバイス（iPhoneなど）
+      trigger.addEventListener('touchstart', (e) => {
