@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Lottie タップ再生（位置＆サイズ調整）</title>
+  <title>Lottie タップ再生（最終版）</title>
   <style>
     html, body {
       margin: 0;
@@ -14,25 +14,26 @@
       position: relative;
     }
 
-    /* グレーの円：トリガー */
+    /* タップエリア（グレーの円） */
     .trigger-zone {
       width: 200px;
       height: 200px;
       border-radius: 50%;
       background-color: rgba(0, 0, 0, 0.05);
       position: absolute;
-      bottom: 20%; /* 下寄りに配置してタップしやすく */
+      bottom: 20%;
       touch-action: none;
       z-index: 1;
+      cursor: pointer;
     }
 
-    /* Lottie アニメーション */
+    /* アニメーション（やや上） */
     #lottie {
-      width: 300px;   /* サイズを大きく */
+      width: 300px;
       height: 300px;
       pointer-events: none;
       position: absolute;
-      top: 25%;  /* アニメーションを上寄りに表示 */
+      top: 25%;
       z-index: 2;
     }
   </style>
@@ -57,23 +58,21 @@
     const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
     if (isTouchDevice) {
-      // タップデバイス（iPhoneなど）
+      // 📱 タップしている間は順再生、離すと逆再生
       trigger.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        if (!animation.isPaused || animation.isPlaying) return;
         animation.setDirection(1);
         animation.play();
       });
 
-      animation.addEventListener('complete', () => {
-        if (isTouchDevice) {
-          animation.setDirection(-1);
-          animation.play();
-        }
+      trigger.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        animation.setDirection(-1);
+        animation.play();
       });
 
     } else {
-      // マウス操作（PC）
+      // 🖱 PCマウス操作
       trigger.addEventListener('mouseenter', () => {
         animation.setDirection(1);
         animation.play();
