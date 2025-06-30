@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>Lottie ホバー再生</title>
+  <style>
+    html, body {
+      margin: 0;
+      height: 100%;
+      background-color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* ターゲットエリア（中央の円） */
+    .trigger-zone {
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.05); /* 半透明の丸 */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    /* Lottieアニメーションのサイズ調整 */
+    #lottie {
+      width: 150px;
+      height: 150px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="trigger-zone" id="triggerZone">
+    <div id="lottie"></div>
+  </div>
+
+  <!-- Lottie ライブラリ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
+  <script>
+    const animation = lottie.loadAnimation({
+      container: document.getElementById('lottie'),
+      renderer: 'svg',
+      loop: false,
+      autoplay: false,
+      path: '4.json' // あなたのLottie JSONファイル
+    });
+
+    // マウスが中央の円に入ったとき → 順再生
+    document.getElementById('triggerZone').addEventListener('mouseenter', () => {
+      animation.setDirection(1); // 順方向
+      animation.play();
+    });
+
+    // マウスが離れたとき → 逆再生
+    document.getElementById('triggerZone').addEventListener('mouseleave', () => {
+      animation.setDirection(-1); // 逆方向
+      animation.play();
+    });
+  </script>
+</body>
+</html>
