@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>Lottie タップ再生対応</title>
+  <title>Lottie タップ再生（位置＆サイズ調整）</title>
   <style>
     html, body {
       margin: 0;
@@ -11,31 +11,36 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      position: relative;
     }
 
+    /* グレーの円：トリガー */
     .trigger-zone {
       width: 200px;
       height: 200px;
       border-radius: 50%;
       background-color: rgba(0, 0, 0, 0.05);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      touch-action: none; /* モバイルでの挙動制御 */
+      position: absolute;
+      bottom: 20%; /* 下寄りに配置してタップしやすく */
+      touch-action: none;
+      z-index: 1;
     }
 
+    /* Lottie アニメーション */
     #lottie {
-      width: 150px;
-      height: 150px;
+      width: 300px;   /* サイズを大きく */
+      height: 300px;
+      pointer-events: none;
+      position: absolute;
+      top: 25%;  /* アニメーションを上寄りに表示 */
+      z-index: 2;
     }
   </style>
 </head>
 <body>
 
-  <div class="trigger-zone" id="triggerZone">
-    <div id="lottie"></div>
-  </div>
+  <div id="lottie"></div>
+  <div class="trigger-zone" id="triggerZone"></div>
 
   <!-- Lottie ライブラリ -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/lottie-web/5.7.4/lottie.min.js"></script>
@@ -49,30 +54,36 @@
     });
 
     const trigger = document.getElementById('triggerZone');
+    const isTouchDevice = window.matchMedia('(pointer: coarse)').matches;
 
-    // PC用（マウス）
-    trigger.addEventListener('mouseenter', () => {
-      animation.setDirection(1);
-      animation.play();
-    });
+    if (isTouchDevice) {
+      // タップデバイス（iPhoneなど）
+      trigger.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (!animation.isPaused || animation.isPlaying) return;
+        animation.setDirection(1);
+        animation.play();
+      });
 
-    trigger.addEventListener('mouseleave', () => {
-      animation.setDirection(-1);
-      animation.play();
-    });
+      animation.addEventListener('complete', () => {
+        if (isTouchDevice) {
+          animation.setDirection(-1);
+          animation.play();
+        }
+      });
 
-    // モバイル用（タップ）
-    trigger.addEventListener('touchstart', (e) => {
-      e.preventDefault(); // iOSの二度タップ防止など
-      animation.setDirection(1);
-      animation.play();
-    });
+    } else {
+      // マウス操作（PC）
+      trigger.addEventListener('mouseenter', () => {
+        animation.setDirection(1);
+        animation.play();
+      });
 
-    trigger.addEventListener('touchend', (e) => {
-      e.preventDefault();
-      animation.setDirection(-1);
-      animation.play();
-    });
+      trigger.addEventListener('mouseleave', () => {
+        animation.setDirection(-1);
+        animation.play();
+      });
+    }
   </script>
 </body>
 </html>
